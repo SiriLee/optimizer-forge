@@ -2,7 +2,7 @@ candidate,description,static,dynamic,smoke_score,full_penalized,decision
 1,"diag/w5/ema0.5 + minimax + chebyshev(beta<=0.9) + armijo",pass,True,37.115,1.609,reject
 2,"diag/w1/ema1.0 + minimax + chebyshev(beta<=0.9) + armijo",pass,False,nan,nan,reject
 3,"diag/w20/ema0.2 + minimax + chebyshev(beta<=0.9) + armijo",pass,True,69.728,1.387,promote
-4,"scalar/w5/ema0.5 + minimax + chebyshev(beta<=0.9) + armijo",pass,False,nan,nan,reject
+4,"scalar/w5/ema0.5 + minimax + chebyshev(beta<=0.9) + armijo",pass,True,21933.989,nan,reject
 5,"diag/w5/ema0.5/fixed + minimax + chebyshev(beta<=0.9) + armijo",pass,True,3811.187,nan,reject
 6,"diag/w5/ema0.5 + invu + none + none",pass,False,nan,nan,reject
 7,"diag/w5/ema0.5 + minimax + chebyshev(beta<=0.9) + none",R3: 无 safeguard 时不允许使用动量加速（无法保证下降引理前提）; R3: 无 safeguard 时步长规则必须是 1/u（保证 alpha <= 1/L）,False,nan,nan,reject

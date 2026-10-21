@@ -263,7 +263,7 @@ def table_structure() -> str:
         if a and n and ok.get((p, "aipg")) and ok.get((p, "nag")):
             sp = f"{n / a:.1f}×"
         elif a and ok.get((p, "aipg")):
-            sp = f"≥{45000 / a:.1f}×（NAG 未收敛）"
+            sp = f"≥{40001 / a:.1f}×（NAG 未收敛）"
         else:
             sp = "—"
         ks = f"{kappa:.1e}" if kappa is not None else "—"

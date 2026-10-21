@@ -110,13 +110,15 @@ def fig_structure(rows: list[dict], out: Path) -> None:
         ours = [r for r in rows if r["problem"] == p and r["method"] == "aipg"]
         if not (nag and ours):
             continue
-        label = f"{_short(p).split(' ')[0]} · {spread[p]:.0f}"
+        short = {"P3_ls_iid_span2": "P3i", "P3_ls_toeplitz_span2": "P3c"}.get(
+            p, _short(p).split(" ")[0])
+        label = f"{short} · {spread[p]:.0f}"
         if all(r["converged"] for r in nag + ours):
             points.append((coupling[p], float(np.median([r["grad_calls"] for r in nag]))
                            / float(np.median([r["grad_calls"] for r in ours])), label, False))
         elif all(r["converged"] for r in ours):
             # NAG failed: the ratio is only a lower bound
-            points.append((coupling[p], 45000.0 / float(np.median([r["grad_calls"] for r in ours])),
+            points.append((coupling[p], 40001.0 / float(np.median([r["grad_calls"] for r in ours])),
                            label, True))
 
     fig, ax = plt.subplots(figsize=(3.6, 2.6))

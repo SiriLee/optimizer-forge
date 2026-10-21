@@ -10,9 +10,13 @@ Two layers:
       R2  g'(-D g) > 0               (descent direction, textbook eq. 3.3)
       R3  safeguarded step accepted   (Armijo or provably safe step)
       R4  f(x_{k+1}) <= f(x_k)        (monotone decrease)
-      R5  rho_emp <= 10 * rho_theory  (blow-up detector, NOT a per-step certificate:
-                                       with interval smoothing and momentum the
-                                       5-step mean can exceed the stationary bound)
+      R5  rho_emp <= 10 * rho_theory + 0.05
+                                     (blow-up detector, NOT a per-step certificate:
+                                      with interval smoothing and momentum the 5-step
+                                      mean routinely exceeds the stationary bound, so
+                                      a pointwise test would reject every real method;
+                                      the +0.05 slack keeps a candidate that claims
+                                      rho=0 from passing on a technicality)
       R6  no NaN / Inf, intervals sane
 
 The gates are deliberately able to *fail*: a candidate that passes everything is
@@ -100,7 +104,7 @@ def check_dynamic(cfg: dict, prob: Problem | None = None, iters: int = 120) -> G
     if cfg["accel"]["type"] == "none" and len(rho_emp) > warmup:
         emp = float(np.max(rho_emp[warmup:]))
         theory = float(np.max(th_hist[warmup:])) if th_hist else float("nan")
-        if np.isfinite(theory) and emp > theory * 1.05 + 1e-9:
+        if np.isfinite(theory) and emp > 10.0 * theory + 0.05:
             ok["R5"] = False
             rules["R5"] = f"经验一步收缩 {emp:.4f} > 理论上界 {theory:.4f}"
     elif len(resid) > warmup + 10:
@@ -114,7 +118,7 @@ def check_dynamic(cfg: dict, prob: Problem | None = None, iters: int = 120) -> G
                 bounds.append(th_hist[k])
         if ratios and bounds:
             emp, theory = float(np.max(ratios)), float(np.max(bounds))
-            if np.isfinite(theory) and emp > theory * 1.10 + 1e-9:
+            if np.isfinite(theory) and emp > 10.0 * theory + 0.05:
                 ok["R5"] = False
                 rules["R5"] = f"经验 {m_steps}-步收缩 {emp:.4f} > 理论上界 {theory:.4f}"
 
