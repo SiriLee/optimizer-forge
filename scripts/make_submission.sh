@@ -15,9 +15,8 @@ git archive --format=zip --prefix=optimizer-forge/ -o "$OUT/optimizer-forge-源�
 # the archive must not leak the personalised report
 echo "（提交包内的 PDF 为带署名的版本；仓库中的 report.pdf 为匿名版）" >> "$OUT/说明.txt"
 
+printf '作业10-12-%s-%s-最优化方法\n' "$SID" "$NAME" > "$OUT/邮件主题.txt"
 cat > "$OUT/邮件正文.txt" <<TXT
-主题：作业10-12-${SID}-${NAME}-最优化方法
-
 老师您好：
 
 附件为《面向机器学习的最优化方法》作业 10-12 的提交材料。
