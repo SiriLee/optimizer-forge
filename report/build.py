@@ -314,21 +314,21 @@ h2 { font-family: "Noto Sans SC", "Noto Sans HK", sans-serif; font-size: 12.4pt;
      border-bottom: .6pt solid #ccc; padding-bottom: .12em; }
 h3 { font-family: "Noto Sans SC", "Noto Sans HK", sans-serif; font-size: 11pt;
      font-weight: 600; margin: .95em 0 .3em 0; }
-p { margin: .38em 0; }
+p { margin: .45em 0; }
 .sub { color: #555; font-size: 9.4pt; margin-bottom: 1.2em; }
 .abstract { background: #f7f7f7; border-left: 2.5pt solid #bbb; padding: .5em .8em; font-size: 9.5pt; }
-table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: .5em 0 .9em 0;
+table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: .6em 0 1.05em 0;
         page-break-inside: avoid; }
 h2, h3 { page-break-after: avoid; }
-th, td { border: .4pt solid #bbb; padding: 2.2pt 3pt; text-align: center; }
+th, td { border: .4pt solid #bbb; padding: 3pt 4pt; text-align: center; }
 th { background: #eee; font-weight: 600; }
 td:first-child, th:first-child { text-align: left; }
 .eq { text-align: center; margin: .55em 0; }
 .eq img { vertical-align: middle; max-width: 94%; }
 .imath { vertical-align: -0.18em; }
-figure { margin: .6em 0 .9em 0; text-align: center; page-break-inside: avoid; }
+figure { margin: .9em 0 1.2em 0; text-align: center; page-break-inside: avoid; }
 figure img { max-width: 100%; }
-figcaption { font-size: 8.6pt; color: #444; margin-top: .25em; }
+figcaption { font-size: 8.6pt; color: #444; margin-top: .45em; line-height: 1.5; }
 code { font-family: "Noto Sans Mono CJK SC", monospace; font-size: 8.8pt;
        background: #f2f2f2; padding: 0 .2em; }
 pre { background: #f5f5f5; padding: .5em .7em; font-size: 8.4pt; white-space: pre-wrap;
