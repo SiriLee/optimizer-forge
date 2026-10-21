@@ -300,14 +300,20 @@ def fig(name: str, width: str = "100%") -> str:
 CSS = """
 @page { size: A4; margin: 2.1cm 2.0cm 2.0cm 2.0cm;
         @bottom-center { content: counter(page); font-size: 8.5pt; color: #666; } }
-body { font-family: "Noto Serif CJK SC", "Noto Serif HK", "Source Han Serif SC", serif;
-       font-size: 10.2pt; line-height: 1.62; color: #111; text-align: left; }
+body { font-family: "Noto Serif SC", "Noto Serif HK", "Source Han Serif SC", serif;
+       font-size: 10.5pt; line-height: 1.72; color: #111; text-align: left; }
 .imath { font-family: "STIXGeneral", "Noto Serif CJK SC", serif; white-space: nowrap; }
-.imath sup, .imath sub { font-size: 72%; }
-h1 { font-family: "Noto Sans CJK SC", sans-serif; font-size: 17pt; margin: 0 0 .2em 0; }
-h2 { font-family: "Noto Sans CJK SC", sans-serif; font-size: 12.2pt; margin: 1.15em 0 .35em 0;
+.imath { font-family: "STIXGeneral", "Noto Serif SC", serif; white-space: nowrap; }
+sup, sub { font-size: 72%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.42em; }
+sub { bottom: -0.22em; }
+h1 { font-family: "Noto Sans SC", "Noto Sans HK", sans-serif; font-size: 17pt;
+     font-weight: 600; margin: 0 0 .25em 0; letter-spacing: .01em; }
+h2 { font-family: "Noto Sans SC", "Noto Sans HK", sans-serif; font-size: 12.4pt;
+     font-weight: 600; margin: 1.2em 0 .4em 0;
      border-bottom: .6pt solid #ccc; padding-bottom: .12em; }
-h3 { font-family: "Noto Sans CJK SC", sans-serif; font-size: 10.8pt; margin: .9em 0 .25em 0; }
+h3 { font-family: "Noto Sans SC", "Noto Sans HK", sans-serif; font-size: 11pt;
+     font-weight: 600; margin: .95em 0 .3em 0; }
 p { margin: .38em 0; }
 .sub { color: #555; font-size: 9.4pt; margin-bottom: 1.2em; }
 .abstract { background: #f7f7f7; border-left: 2.5pt solid #bbb; padding: .5em .8em; font-size: 9.5pt; }
