@@ -4,7 +4,7 @@
 
 - **方法**：AIPG（Adaptive Interval-Preconditioned Gradient）——逐坐标用梯度差分估计曲率**区间**，步长取"最坏情况收缩因子最小"的闭式解 $2/(u+\ell)$，叠加 Chebyshev 三项递推与 Armijo 保护。
 - **工程**：Optimizer Forge——把"提出候选 → 静态闸 → 理论闸 → 实验闸 → 记录"做成可离线重放的流水线。
-- **报告**：[`report/report.pdf`](report/report.pdf)（13 页，中文）。
+- **报告**：[`report/report.pdf`](report/report.pdf)（14 页，中文）。
 
 ## 结果一览
 
