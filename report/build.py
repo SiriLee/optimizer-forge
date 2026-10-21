@@ -76,7 +76,8 @@ _MAP = {
     "nabla": "∇", "partial": "∂", "infty": "∞", "star": "⋆", "ast": "⋆",
     "le": "≤", "leq": "≤", "ge": "≥", "geq": "≥", "ne": "≠",
     "approx": "≈", "sim": "∼", "propto": "∝", "in": "∈", "to": "→",
-    "top": "ᵀ", "odot": "⊙", "sum": "Σ", "prod": "Π",
+    "top": "ᵀ", "odot": "⊙", "sum": "Σ", "prod": "Π", "times": "×",
+    "cdot": "·", "ldots": "…", "dots": "…", "partial": "∂",
     "|": "‖", "{": "{", "}": "}", "max": "max", "min": "min",
     "mathrm": "", "mathcal": "", "quad": "\u2003", "qquad": "\u2003\u2003",
     ",": "\u2009", ";": "\u2005", "!": "", " ": " ",
@@ -289,7 +290,7 @@ th, td { border: .4pt solid #bbb; padding: 2.2pt 3pt; text-align: center; }
 th { background: #eee; font-weight: 600; }
 td:first-child, th:first-child { text-align: left; }
 .eq { text-align: center; margin: .55em 0; }
-.eq img { vertical-align: middle; }
+.eq img { vertical-align: middle; max-width: 94%; }
 .imath { vertical-align: -0.18em; }
 figure { margin: .6em 0 .9em 0; text-align: center; page-break-inside: avoid; }
 figure img { max-width: 100%; }

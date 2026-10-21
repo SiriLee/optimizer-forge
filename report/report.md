@@ -159,7 +159,9 @@ $$f(x^{K})-f^{\star}\ \le\ \left(1-\frac{2c\mu}{\hat L}\right)^{K}\bigl(f(x^{0})
 
 A2 被违反时，上述证明全部失效。更糟的是，**对角预条件本身就可能是发散的**。定义
 
-$$\tilde H=D^{1/2}HD^{1/2},\qquad \rho_{\mathrm{exact}}=\max_i|1-\lambda_i(\tilde H)|$$
+$$\tilde H=D^{1/2}HD^{1/2}$$
+
+$$\rho_{\mathrm{exact}}=\max_i|1-\lambda_i(\tilde H)|$$
 
 它是以真实对角 $D=\mathrm{diag}(1/H_{ii})$ 做预条件时的一步收缩因子。我们在 5 个问题上算了它，并做了一个"oracle 实验"：直接给方法真实对角曲率、不做任何保护，跑 300 步。
 

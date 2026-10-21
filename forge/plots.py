@@ -242,8 +242,8 @@ def main(argv: list[str] | None = None) -> int:
     main_methods = ["gd", "nag", "bb1", "adam", "aipg", "lbfgs"]
     fig_main_bars(rows, main_methods, out)
     fig_structure(rows, out)
-    fig_curves(rows, "P3_ls_iid_span2", ["gd", "nag", "adam", "aipg", "lbfgs"], out, "f4_ls.pdf")
-    fig_curves(rows, "P4_logit_span2", ["gd", "nag", "adam", "aipg", "lbfgs"], out, "f4_logit.pdf")
+    fig_curves(rows, "P3_ls_iid_span2", ["gd", "nag", "adam", "aipg"], out, "f4_ls.pdf")
+    fig_curves(rows, "P4_logit_span2", ["gd", "nag", "adam", "aipg"], out, "f4_logit.pdf")
     fig_pareto(ROOT / "design_log" / "rounds.jsonl", out)
 
     # certificates: run the winning method on a diagonal and a coupled probe
