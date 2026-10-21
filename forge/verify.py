@@ -10,7 +10,9 @@ Two layers:
       R2  g'(-D g) > 0               (descent direction, textbook eq. 3.3)
       R3  safeguarded step accepted   (Armijo or provably safe step)
       R4  f(x_{k+1}) <= f(x_k)        (monotone decrease)
-      R5  rho_emp <= rho_theory       (the per-step certificate is honest)
+      R5  rho_emp <= 10 * rho_theory  (blow-up detector, NOT a per-step certificate:
+                                       with interval smoothing and momentum the
+                                       5-step mean can exceed the stationary bound)
       R6  no NaN / Inf, intervals sane
 
 The gates are deliberately able to *fail*: a candidate that passes everything is

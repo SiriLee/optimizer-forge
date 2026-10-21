@@ -16,6 +16,7 @@ import re
 from pathlib import Path
 
 import markdown
+import numpy as np
 import matplotlib
 
 matplotlib.use("Agg")
@@ -131,6 +132,12 @@ def inline_math(tex: str) -> str:
                 out.append(f"({inline_math(a)})/({inline_math(b)})")
                 i = k
                 continue
+            if name == "sqrt":
+                base, k = _token(tex, j)
+                body = inline_math(base)
+                out.append("√" + (body if len(base) <= 1 else f"({body})"))
+                i = k
+                continue
             if name == "hat":
                 base, k = _token(tex, j)
                 out.append(inline_math(base) + "\u0302")
@@ -228,31 +235,43 @@ def table_ablation() -> str:
 def table_structure() -> str:
     path = TAB / "final_s3_summary.csv"
     rows = list(csv.DictReader(path.open(encoding="utf-8")))
-    meta = {}
     import sys
     sys.path.insert(0, str(ROOT))
     from forge.problems import BUILDERS
+
+    meta, spread = {}, {}
     for key in ("P1", "P2", "P3i", "P3c", "P4i", "P5"):
-        p = BUILDERS[key](0)
-        meta[p.name] = p.meta
+        prob = BUILDERS[key](0)
+        meta[prob.name] = prob.meta
+        if prob.H0 is not None:
+            d = np.diag(prob.H0)
+            spread[prob.name] = float(d.max() / max(d.min(), 1e-300))
+
     med, ok = {}, {}
     for r in rows:
         med[(r["problem"], r["method"])] = float(r["grad_calls_median"])
         ok[(r["problem"], r["method"])] = float(r.get("success_rate", 1.0)) >= 0.5
-    out = ["| 问题 | 条件数 κ | 耦合度 | AIPG | NAG | 加速比 (NAG/AIPG) |",
-           "|---|---|---|---|---|---|"]
+
+    out = ["| 问题 | 条件数 κ | 对角跨度 | 耦合度 | AIPG | NAG | 加速比 |",
+           "|---|---|---|---|---|---|---|"]
     for p, name in SHORT.items():
         if p not in meta:
             continue
         kappa = meta[p].get("kappa")
         coup = meta[p].get("coupling")
         a, n = med.get((p, "aipg")), med.get((p, "nag"))
-        sp = f"{n / a:.1f}×" if (a and n and ok.get((p, "aipg")) and ok.get((p, "nag"))) else "—"
+        if a and n and ok.get((p, "aipg")) and ok.get((p, "nag")):
+            sp = f"{n / a:.1f}×"
+        elif a and ok.get((p, "aipg")):
+            sp = f"≥{45000 / a:.1f}×（NAG 未收敛）"
+        else:
+            sp = "—"
         ks = f"{kappa:.1e}" if kappa is not None else "—"
+        sd = f"{spread[p]:.0f}" if p in spread else "—"
         cs = f"{coup:.2f}" if coup is not None else "—"
         aa = f"{a:.0f}" if a and ok.get((p, "aipg")) else "未收敛"
         nn = f"{n:.0f}" if n and ok.get((p, "nag")) else "未收敛"
-        out.append(f"| {name} | {ks} | {cs} | {aa} | {nn} | {sp} |")
+        out.append(f"| {name} | {ks} | {sd} | {cs} | {aa} | {nn} | {sp} |")
     return "\n".join(out)
 
 

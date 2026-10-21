@@ -57,12 +57,13 @@ def _short(name: str) -> str:
 
 def fig_main_bars(rows: list[dict], methods: list[str], out: Path) -> None:
     problems = sorted({r["problem"] for r in rows})
-    med = {}
+    med, conv = {}, {}
     for p in problems:
         for m in methods:
-            vals = [r["grad_calls"] for r in rows if r["problem"] == p and r["method"] == m]
-            if vals:
-                med[(p, m)] = float(np.median(vals))
+            sub = [r for r in rows if r["problem"] == p and r["method"] == m]
+            if sub:
+                med[(p, m)] = float(np.median([r["grad_calls"] for r in sub]))
+                conv[(p, m)] = all(r["converged"] for r in sub)
     fig, ax = plt.subplots(figsize=(7.2, 3.0))
     width = 0.8 / len(methods)
     for i, m in enumerate(methods):
@@ -72,6 +73,12 @@ def fig_main_bars(rows: list[dict], methods: list[str], out: Path) -> None:
                 xs.append(j + (i - (len(methods) - 1) / 2) * width)
                 ys.append(med[(p, m)])
         ax.bar(xs, ys, width=width, color=COLORS.get(m, "#333"), label=LABELS.get(m, m))
+    # mark budget-capped (non-converged) bars so a cap is not read as a measurement
+    for i, m in enumerate(methods):
+        for j, p in enumerate(problems):
+            if (p, m) in conv and not conv[(p, m)]:
+                ax.bar(j + (i - (len(methods) - 1) / 2) * width, med[(p, m)], width=width,
+                       color="none", edgecolor="k", hatch="///", linewidth=0)
     ax.set_yscale("log")
     ax.set_xticks(range(len(problems)))
     ax.set_xticklabels([_short(p) for p in problems], rotation=18, ha="right")
@@ -84,28 +91,44 @@ def fig_main_bars(rows: list[dict], methods: list[str], out: Path) -> None:
 
 
 def fig_structure(rows: list[dict], out: Path) -> None:
+    """Speedup vs NAG against coupling, annotated with the diagonal spread."""
+    from .problems import BUILDERS
+
+    spread = {}
+    for key in ("P1", "P2", "P3i", "P3c", "P4i"):
+        prob = BUILDERS[key](0)
+        if prob.H0 is not None:
+            d = np.diag(prob.H0)
+            spread[prob.name] = float(d.max() / max(d.min(), 1e-300))
+
     coupling = {r["problem"]: r.get("coupling") for r in rows}
-    points: list[tuple[float, float, str]] = []
+    points = []
     for p in sorted(coupling):
-        if coupling[p] is None:
+        if coupling[p] is None or p not in spread:
             continue
         nag = [r for r in rows if r["problem"] == p and r["method"] == "nag"]
         ours = [r for r in rows if r["problem"] == p and r["method"] == "aipg"]
-        # only compare when both methods actually converged: a budget value is
-        # not a measurement
-        if nag and ours and all(r["converged"] for r in nag + ours):
-            points.append((coupling[p],
-                           float(np.median([r["grad_calls"] for r in nag]))
-                           / float(np.median([r["grad_calls"] for r in ours])),
-                           _short(p)))
+        if not (nag and ours):
+            continue
+        label = f"{_short(p).split(' ')[0]} · {spread[p]:.0f}"
+        if all(r["converged"] for r in nag + ours):
+            points.append((coupling[p], float(np.median([r["grad_calls"] for r in nag]))
+                           / float(np.median([r["grad_calls"] for r in ours])), label, False))
+        elif all(r["converged"] for r in ours):
+            # NAG failed: the ratio is only a lower bound
+            points.append((coupling[p], 45000.0 / float(np.median([r["grad_calls"] for r in ours])),
+                           label, True))
+
     fig, ax = plt.subplots(figsize=(3.6, 2.6))
     ax.axhline(1.0, color="k", lw=0.7, ls="--")
-    ax.scatter([p[0] for p in points], [p[1] for p in points], s=34,
-               color=COLORS["aipg"], zorder=3)
-    for x, y, label in points:
-        ax.annotate(label, (x, y), textcoords="offset points", xytext=(5, 4), fontsize=6.5)
-    ax.set_xlim(-0.02, 0.98)
+    for x, y, label, lower in points:
+        ax.scatter([x], [y], s=36, zorder=3, color=COLORS["aipg"],
+                   marker="^" if lower else "o", facecolors="none" if lower else COLORS["aipg"])
+        text = f"{label}  ≥{y:.1f}× (lower bound)" if lower else f"{label}  {y:.1f}×"
+        ax.annotate(text, (x, y), textcoords="offset points", xytext=(6, 4), fontsize=6.0)
+    ax.set_xlim(-0.02, 1.02)
     ax.set_yscale("log")
+    ax.set_ylim(0.2, 90)
     ax.set_xlabel("coupling  $\\|H-\\mathrm{diag}(H)\\|_F/\\|H\\|_F$")
     ax.set_ylabel("speedup vs NAG")
     fig.tight_layout()
@@ -258,7 +281,9 @@ def main(argv: list[str] | None = None) -> int:
     from .problems import BUILDERS
     from .verify import certify_trace
 
-    cfg = normalize(None)
+    # use the *reported* method (the design-loop winner), not the DSL default
+    winner = json.loads((ROOT / "design_log" / "winner.json").read_text(encoding="utf-8"))
+    cfg = normalize(winner["candidate"])
     certs = {name: certify_trace(cfg, BUILDERS[name](0)) for name in ("P1", "P3c")}
     (ROOT / "results" / "certificates.json").write_text(
         json.dumps(certs, ensure_ascii=False), encoding="utf-8")

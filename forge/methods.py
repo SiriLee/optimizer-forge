@@ -230,7 +230,16 @@ class AIPG(Method):
     name = "aipg"
 
     def __init__(self, prob, ev, cfg=None):
-        cfg = {**DEFAULT_AIPG, **(cfg or {})}
+        cfg = {**(cfg or {})}
+        merged = {}
+        for section, values in DEFAULT_AIPG.items():
+            if isinstance(values, dict):
+                merged[section] = {**values, **cfg.get(section, {})}
+            else:
+                merged[section] = cfg.get(section, values)
+        for section, values in cfg.items():
+            merged.setdefault(section, values)
+        cfg = merged
         super().__init__(prob, ev, cfg)
         L = prob.L
         self.mu0 = max(1e-8, float(prob.mu) if prob.mu > 0 else 1e-6 * L)
@@ -421,14 +430,19 @@ BASELINES = ["gd", "gd_armijo", "heavy_ball", "nag", "bb1", "bb2", "adam",
              "aipg", "aipg_plain", "aipg_scalar", "aipg_fixed", "lbfgs"]
 
 
+_WINNER_PRECOND = {"type": "diag", "source": "secant", "window": 20, "ema": 0.2,
+                   "adaptive": True}
+
 PRESETS: dict[str, dict] = {
     # the method as reported: interval preconditioner + Chebyshev acceleration
-    "aipg": {"precond": {"window": 20, "ema": 0.2}, "accel": {"type": "chebyshev"}},
-    # ablations
-    "aipg_plain": {"accel": {"type": "none"}},
-    "aipg_scalar": {"accel": {"type": "chebyshev"}, "precond": {"type": "scalar"}},
-    "aipg_fixed": {"accel": {"type": "chebyshev"}, "precond": {"adaptive": False}},
-    "aipg_cheb": {"accel": {"type": "chebyshev"}},
+    "aipg": {"precond": dict(_WINNER_PRECOND), "accel": {"type": "chebyshev"}},
+    # one-factor-at-a-time ablations, all inheriting the winner's preconditioner
+    "aipg_plain": {"precond": dict(_WINNER_PRECOND), "accel": {"type": "none"}},
+    "aipg_scalar": {"precond": {**_WINNER_PRECOND, "type": "scalar"},
+                    "accel": {"type": "chebyshev"}},
+    "aipg_fixed": {"precond": {**_WINNER_PRECOND, "adaptive": False},
+                   "accel": {"type": "chebyshev"}},
+    "aipg_cheb": {"precond": dict(_WINNER_PRECOND), "accel": {"type": "chebyshev"}},
 }
 
 
