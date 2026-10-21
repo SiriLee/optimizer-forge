@@ -85,21 +85,28 @@ def fig_main_bars(rows: list[dict], methods: list[str], out: Path) -> None:
 
 def fig_structure(rows: list[dict], out: Path) -> None:
     coupling = {r["problem"]: r.get("coupling") for r in rows}
-    problems = [p for p in sorted(coupling) if coupling[p] is not None]
-    xs, ys = [], []
-    for p in problems:
-        nag = [r["grad_calls"] for r in rows if r["problem"] == p and r["method"] == "nag"]
-        ours = [r["grad_calls"] for r in rows if r["problem"] == p and r["method"] == "aipg"]
-        if nag and ours:
-            xs.append(coupling[p])
-            ys.append(float(np.median(nag)) / float(np.median(ours)))
+    points: list[tuple[float, float, str]] = []
+    for p in sorted(coupling):
+        if coupling[p] is None:
+            continue
+        nag = [r for r in rows if r["problem"] == p and r["method"] == "nag"]
+        ours = [r for r in rows if r["problem"] == p and r["method"] == "aipg"]
+        # only compare when both methods actually converged: a budget value is
+        # not a measurement
+        if nag and ours and all(r["converged"] for r in nag + ours):
+            points.append((coupling[p],
+                           float(np.median([r["grad_calls"] for r in nag]))
+                           / float(np.median([r["grad_calls"] for r in ours])),
+                           _short(p)))
     fig, ax = plt.subplots(figsize=(3.6, 2.6))
     ax.axhline(1.0, color="k", lw=0.7, ls="--")
-    ax.scatter(xs, ys, s=34, color=COLORS["aipg"], zorder=3)
-    for x, y, p in zip(xs, ys, problems):
-        ax.annotate(_short(p), (x, y), textcoords="offset points", xytext=(5, 4), fontsize=6.5)
+    ax.scatter([p[0] for p in points], [p[1] for p in points], s=34,
+               color=COLORS["aipg"], zorder=3)
+    for x, y, label in points:
+        ax.annotate(label, (x, y), textcoords="offset points", xytext=(5, 4), fontsize=6.5)
+    ax.set_xlim(-0.02, 0.98)
     ax.set_yscale("log")
-    ax.set_xlabel("coupling  ||H-diag(H)||$_F$/||H||$_F$")
+    ax.set_xlabel("coupling  $\\|H-\\mathrm{diag}(H)\\|_F/\\|H\\|_F$")
     ax.set_ylabel("speedup vs NAG")
     fig.tight_layout()
     fig.savefig(out / "f6_structure.pdf")
