@@ -9,8 +9,11 @@ NAME="${2:?usage: make_submission.sh <学号> <姓名>}"
 OUT="dist/作业10-12-${SID}-${NAME}"
 mkdir -p "$OUT"
 
-cp report/report.pdf "$OUT/作业10-12-${SID}-${NAME}-报告.pdf"
+.venv/bin/python report/build.py --author "${NAME}　${SID}" \
+  --out "$OUT/作业10-12-${SID}-${NAME}-报告.pdf"
 git archive --format=zip --prefix=optimizer-forge/ -o "$OUT/optimizer-forge-源码.zip" HEAD
+# the archive must not leak the personalised report
+echo "（提交包内的 PDF 为带署名的版本；仓库中的 report.pdf 为匿名版）" >> "$OUT/说明.txt"
 
 cat > "$OUT/邮件正文.txt" <<TXT
 主题：作业10-12-${SID}-${NAME}-最优化方法

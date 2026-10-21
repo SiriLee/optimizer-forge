@@ -315,8 +315,9 @@ li { margin: .15em 0; }
 """
 
 
-def build() -> Path:
+def build(author: str = "", out: Path | None = None) -> Path:
     src = (REPORT / "report.md").read_text(encoding="utf-8")
+    src = src.replace("{{AUTHOR}}", f" · {author}" if author else "")
 
     src = src.replace("{{TABLE:main}}", table_main())
     src = src.replace("{{TABLE:ablation}}", table_ablation())
@@ -341,11 +342,18 @@ def build() -> Path:
     doc = (f'<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">'
            f"<style>{CSS}</style></head><body>{html}</body></html>")
     (REPORT / "report.html").write_text(doc, encoding="utf-8")
-    out = REPORT / "report.pdf"
-    HTML(string=doc, base_url=str(ROOT)).write_pdf(out)
-    return out
+    target = Path(out) if out else REPORT / "report.pdf"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    HTML(string=doc, base_url=str(ROOT)).write_pdf(target)
+    return target
 
 
 if __name__ == "__main__":
-    pdf = build()
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--author", default="", help="追加到封面的署名（提交版用，仓库版留空）")
+    ap.add_argument("--out", default=None)
+    args = ap.parse_args()
+    pdf = build(author=args.author, out=args.out)
     print(f"pdf → {pdf}")

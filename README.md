@@ -73,7 +73,3 @@ python3 -m venv --system-site-packages .venv
 - 随机性由 `numpy.random.default_rng(seed)` 固定。
 - 报告里每个数字都能追溯到 `results/raw/final_s3.jsonl`、`results/tables/final_s3_summary.csv` 或 `design_log/rounds.jsonl`。
 - `--proposer recorded` 不需要任何 API key。
-
-## 备注
-
-`internal/` 为本地设计与讨论记录，已被 `.gitignore` 排除，不随仓库发布。
