@@ -78,6 +78,8 @@ _MAP = {
     "approx": "≈", "sim": "∼", "propto": "∝", "in": "∈", "to": "→",
     "top": "ᵀ", "odot": "⊙", "sum": "Σ", "prod": "Π", "times": "×",
     "cdot": "·", "ldots": "…", "dots": "…", "partial": "∂",
+    "lesssim": "≲", "gtrsim": "≳", "ll": "≪", "gg": "≫",
+    "Rightarrow": "⇒", "Leftrightarrow": "⇔", "longrightarrow": "→",
     "|": "‖", "{": "{", "}": "}", "max": "max", "min": "min",
     "mathrm": "", "mathcal": "", "quad": "\u2003", "qquad": "\u2003\u2003",
     ",": "\u2009", ";": "\u2005", "!": "", " ": " ",
@@ -148,7 +150,14 @@ def inline_math(tex: str) -> str:
             out.append(f"<{tag}>{inline_math(body)}</{tag}>")
             i = k
             continue
-        out.append("−" if c == "-" else c)
+        if c == "<":
+            out.append("&lt;")
+        elif c == ">":
+            out.append("&gt;")
+        elif c == "&":
+            out.append("&amp;")
+        else:
+            out.append("−" if c == "-" else c)
         i += 1
     return "".join(out)
 
@@ -297,7 +306,7 @@ figure img { max-width: 100%; }
 figcaption { font-size: 8.6pt; color: #444; margin-top: .25em; }
 code { font-family: "Noto Sans Mono CJK SC", monospace; font-size: 8.8pt;
        background: #f2f2f2; padding: 0 .2em; }
-pre { background: #f5f5f5; padding: .5em .7em; font-size: 8.4pt; overflow-x: hidden;
+pre { background: #f5f5f5; padding: .5em .7em; font-size: 8.4pt; white-space: pre-wrap;
       border-left: 2pt solid #ccc; }
 ul, ol { margin: .3em 0 .3em 1.2em; padding: 0; }
 li { margin: .15em 0; }
