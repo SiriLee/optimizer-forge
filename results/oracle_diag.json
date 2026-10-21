@@ -1,0 +1,32 @@
+{
+ "P1_quad_diag_k10000": {
+  "rho_exact_diag": 3.3306690738754696e-16,
+  "oracle_gap_after": -1.7763568394002505e-15,
+  "oracle_iter": 300,
+  "diverged": false
+ },
+ "P2_quad_rot_k1000": {
+  "rho_exact_diag": 5.611590432845704,
+  "oracle_gap_after": Infinity,
+  "oracle_iter": 300,
+  "diverged": true
+ },
+ "P3_ls_iid_span2": {
+  "rho_exact_diag": 1.343662548213608,
+  "oracle_gap_after": 4.5219047898704084e+73,
+  "oracle_iter": 300,
+  "diverged": false
+ },
+ "P3_ls_toeplitz_span2": {
+  "rho_exact_diag": 16.23601161467303,
+  "oracle_gap_after": Infinity,
+  "oracle_iter": 255,
+  "diverged": true
+ },
+ "P4_logit_span2": {
+  "rho_exact_diag": 0.35230521545318316,
+  "oracle_gap_after": -5.551115123125783e-17,
+  "oracle_iter": 300,
+  "diverged": false
+ }
+}
